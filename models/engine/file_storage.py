@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """Defines the FileStorage class"""
-from models import base_model
 import json
 
 
@@ -35,6 +34,8 @@ class FileStorage:
         """Deserialisation:
         loads a json file to the objects dict
         if the file exisit"""
-
-        with open(FileStorage.__file_path, 'r') as file:
-            json.load(FileStorage.__objects, file)
+        try:
+            with open(FileStorage.__file_path, 'r') as file:
+                json.load(FileStorage.__objects, file)
+        except FileNotFoundError:
+            pass
