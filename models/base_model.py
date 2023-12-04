@@ -3,6 +3,7 @@
 
 from datetime import datetime  # Import datetime module
 import uuid                    # Import unique identifier
+from models import storage     # Links BaseModel to FileStorage class
 
 
 class BaseModel:
@@ -16,6 +17,7 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+            storage.new()
         else:
             for key, value in kwargs.items():
                 if key != '__class__':
@@ -33,6 +35,7 @@ class BaseModel:
         current datetime
         """
         self.updated_at = datetime.now()
+        storage.save()
 
     def to_dict(self):
         """Returns a dictionary containing all keys/values of __dict__
