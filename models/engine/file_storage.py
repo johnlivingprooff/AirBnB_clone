@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 """Defines the FileStorage class"""
 import json
-
+from models.base_model import BaseModel
+import models
 
 class FileStorage:
     """the FileStorage class that stores dictionary
@@ -13,37 +14,35 @@ class FileStorage:
 
     def all(self):
         """returns the dict repr of object"""
-        return FileStorage.__objects
+        return self.__objects
     
     def new(self, obj):
         """populates the objects dict with new obj
         using obj_class_name.id as the key
         """
-        key = obj.to_dict()['__class__'] + '.' + obj.id
-        self.all().update({key: obj})
+        key = f"{obj.__class__.__name__}.{obj.id}"
+        self.__objects[key] = obj
 
     def save(self):
         """Serialisation:
         saves the dictionary repr of
-        an object in a json file"""
-        with open(FileStorage.__file_path, 'w') as file:
-            temp = {}
-            temp.update(FileStorage.__objects)
-            for key, value in temp.items():
-                if hasattr(value, 'to_dict'):
-                    temp[key] = value.to_dict()
-                else:
-                    temp[key] = value
-            json.dump(temp, file)
+        an object in a json file
+        """
+        temp_dict = {}
+        for key, value in self.__objects.items():
+            temp_dict[key] = value.to_dict()
+        with open(self.__file_path, 'w', encoding='utf-8') as data_file:
+            json.dump(temp_dict, data_file)
         
     def reload(self):
         """Deserialisation:
         loads a json file to the objects dict
         if the file exisit"""
         try:
-            with open(FileStorage.__file_path, 'r') as file:
-                temp = json.load(file)
-                for key, value in temp.items():
-                    self.all()[key] = value
+            with open(self.__file_path, 'r', encoding='utf-8') as data_file:
+                new_obj = json.load(data_file)
+                for key, value in new_obj.items():
+                    temp_obj = eval('{}(**value)'.format(value['__class__']))
+                    self.__objects[key] = temp_obj
         except FileNotFoundError:
             pass
