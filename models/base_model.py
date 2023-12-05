@@ -45,10 +45,6 @@ class BaseModel:
         instance_dict['__class__'] = type(self).__name__
         if isinstance(self.created_at, datetime):
             instance_dict['created_at'] = self.created_at.isoformat()
-        else:
-            instance_dict['created_at'] = str(self.created_at)
         if isinstance(self.updated_at, datetime):
             instance_dict['updated_at'] = self.updated_at.isoformat()
-        else:
-            instance_dict['updated_at'] = str(self.updated_at)
         return instance_dict

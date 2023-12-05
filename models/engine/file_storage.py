@@ -19,30 +19,28 @@ class FileStorage:
         """populates the objects dict with new obj
         using obj_class_name.id as the key
         """
-        key = obj.to_dict()['__class__'] + '.' + obj.id
+        key = f"{obj.to_dict()['__class__']}.{obj.id}"
         self.all().update({key: obj})
 
     def save(self):
         """Serialisation:
         saves the dictionary repr of
         an object in a json file"""
-        with open(FileStorage.__file_path, 'w') as file:
+        with open(FileStorage.__file_path, 'w', encoding='utf-8') as data_file:
             temp = {}
             temp.update(FileStorage.__objects)
             for key, value in temp.items():
                 if hasattr(value, 'to_dict'):
                     temp[key] = value.to_dict()
-                else:
-                    temp[key] = value
-            json.dump(temp, file)
+            json.dump(temp, data_file)
         
     def reload(self):
         """Deserialisation:
         loads a json file to the objects dict
         if the file exisit"""
         try:
-            with open(FileStorage.__file_path, 'r') as file:
-                temp = json.load(file)
+            with open(FileStorage.__file_path, 'r', encoding='utf-8') as data_file:
+                temp = json.load(data_file)
                 for key, value in temp.items():
                     self.all()[key] = value
         except FileNotFoundError:
