@@ -3,6 +3,7 @@
 
 from datetime import datetime  # Import datetime module
 import uuid                    # Import unique identifier
+from models import storage     # Links BaseModel to FileStorage class
 
 
 class BaseModel:
@@ -16,6 +17,7 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+            storage.new(self)
         else:
             for key, value in kwargs.items():
                 if key != '__class__':
@@ -33,6 +35,7 @@ class BaseModel:
         current datetime
         """
         self.updated_at = datetime.now()
+        storage.save()
 
     def to_dict(self):
         """Returns a dictionary containing all keys/values of __dict__
@@ -40,6 +43,12 @@ class BaseModel:
         """
         instance_dict = self.__dict__
         instance_dict['__class__'] = type(self).__name__
-        instance_dict['created_at'] = self.created_at.isoformat()
-        instance_dict['updated_at'] = self.updated_at.isoformat()
+        if isinstance(self.created_at, datetime):
+            instance_dict['created_at'] = self.created_at.isoformat()
+        else:
+            instance_dict['created_at'] = str(self.created_at)
+        if isinstance(self.updated_at, datetime):
+            instance_dict['updated_at'] = self.updated_at.isoformat()
+        else:
+            instance_dict['updated_at'] = str(self.updated_at)
         return instance_dict
