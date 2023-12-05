@@ -3,7 +3,7 @@
 
 from datetime import datetime  # Import datetime module
 import uuid                    # Import unique identifier
-from models import storage     # Links BaseModel to FileStorage class
+import models     # Links BaseModel to FileStorage class
 
 
 class BaseModel:
@@ -13,16 +13,17 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         """Initializes once an instance is created"""
+        d_format = "%Y-%m-%dT%H:%M:%S.%f"
         if not kwargs:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
-            storage.new(self)
+            models.storage.new(self)
         else:
             for key, value in kwargs.items():
                 if key != '__class__':
                     if key == 'created_at' or key == 'updated_at':
-                        self.__dict__[key] = datetime.fromisoformat(value)
+                        self.__dict__[key] = datetime.strptime(value, d_format)
                     else:
                         self.__dict__[key] = value
 
@@ -35,20 +36,15 @@ class BaseModel:
         current datetime
         """
         self.updated_at = datetime.now()
-        storage.save()
+        models.storage.save()
 
     def to_dict(self):
         """Returns a dictionary containing all keys/values of __dict__
         of instance
         """
-        instance_dict = self.__dict__
-        instance_dict['__class__'] = type(self).__name__
-        if isinstance(self.created_at, datetime):
-            instance_dict['created_at'] = self.created_at.isoformat()
-        else:
-            instance_dict['created_at'] = str(self.created_at)
-        if isinstance(self.updated_at, datetime):
-            instance_dict['updated_at'] = self.updated_at.isoformat()
-        else:
-            instance_dict['updated_at'] = str(self.updated_at)
+        instance_dict = self.__dict__.copy()
+        instance_dict['__class__'] = self.__class__.__name__
+        instance_dict['created_at'] = self.created_at.isoformat()
+        instance_dict['updated_at'] = self.updated_at.isoformat()
+
         return instance_dict
