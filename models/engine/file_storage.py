@@ -27,12 +27,12 @@ class FileStorage:
         saves the dictionary repr of
         an object in a json file"""
         with open(FileStorage.__file_path, 'w', encoding='utf-8') as data_file:
-            temp = {}
-            temp.update(FileStorage.__objects)
-            for key, value in temp.items():
+            temp_dict = {}
+            temp_dict.update(FileStorage.__objects)
+            for key, value in temp_dict.items():
                 if hasattr(value, 'to_dict'):
-                    temp[key] = value.to_dict()
-            json.dump(temp, data_file)
+                    temp_dict[key] = value.to_dict()
+            json.dump(temp_dict, data_file)
         
     def reload(self):
         """Deserialisation:
@@ -40,8 +40,8 @@ class FileStorage:
         if the file exisit"""
         try:
             with open(FileStorage.__file_path, 'r', encoding='utf-8') as data_file:
-                temp = json.load(data_file)
-                for key, value in temp.items():
+                temp_dict = json.load(data_file)
+                for key, value in temp_dict.items():
                     self.all()[key] = value
         except FileNotFoundError:
             pass
