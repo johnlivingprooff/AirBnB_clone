@@ -27,7 +27,13 @@ class FileStorage:
         saves the dictionary repr of
         an object in a json file"""
         with open(FileStorage.__file_path, 'w') as file:
-            temp = FileStorage.__objects
+            temp = {}
+            temp.update(FileStorage.__objects)
+            for key, value in temp.items():
+                if hasattr(value, 'to_dict'):
+                    temp[key] = value.to_dict()
+                else:
+                    temp[key] = value
             json.dump(temp, file)
         
     def reload(self):
@@ -36,6 +42,8 @@ class FileStorage:
         if the file exisit"""
         try:
             with open(FileStorage.__file_path, 'r') as file:
-                json.load(FileStorage.__objects, file)
+                temp = json.load(file)
+                for key, value in temp.items():
+                    self.all()[key] = value
         except FileNotFoundError:
             pass
