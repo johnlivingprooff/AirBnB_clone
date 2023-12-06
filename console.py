@@ -2,8 +2,7 @@
 """Defines entry point of the command interpreter"""
 
 import cmd
-import os
-from models import storage
+import models
 from models.amenity import Amenity
 from models.base_model import BaseModel
 from models.city import City
@@ -18,98 +17,164 @@ class HBNBCommand(cmd.Cmd):
     """A class that inherits a suclass named Cmd in a module named cmd"""
 
     prompt = '(hbnb) '
-    classes = {
-        'BaseModel': BaseModel, 'Amenity': Amenity,
-        'City': City, 'Place': Place,
-        'Review': Review, 'State': State,
-        'User': User
-    }
+    all_classes = [ "Amenity", "BaseModel", "City", "Place", "State", "Review", "User" ]
 
     def do_create(self, class_name):
         """Creates a new instance of class and saves it"""
         if not class_name:
             print("** class name missing **")
-            return
-
-        elif class_name not in HBNBCommand.classes:
+        elif class_name not in HBNBCommand.all_classes:
             print("** class doesn't exist **")
-            return
         else:
-            new_instance = HBNBCommand.classes[class_name]()
+            new_instance = eval("{}()".format(class_name))
             new_instance.save()
             print(new_instance.id)
 
     def help_create(self):
-        """Help documentation for create"""
+        """Docstring for create command"""
         print("Creates a new instance of specified class")
 
-    def do_show(self, args):
+    def do_show(self, line):
         """Prints the string representation of an instance
         based on the class name and id
         """
-        if not args:
+        args = line.split()
+        if len(args) == 0:
             print("** class name missing **")
             return
-
-        separate_args = args.split(" ")
-        class_name = separate_args[0]
-        if len(separate_args) > 1:
-            class_id = separate_args[1]
-
-        # for separate in separate_args:
-        #     print(f"{separate}")
-
-            if class_name not in HBNBCommand.classes:
-                print("** class doesn't exist **")
-                return
-
-            key = f"{class_name}.{class_id}"
-            try:
-                print(FileStorage._FileStorage__objects[key])
-            except KeyError:
-                print("** no instance found **")
-
-        else:
+        if args[0] not in HBNBCommand.all_classes:
+            print("** class doesn't exist **")
+            return
+        if len(args) == 1:
             print("** instance id missing **")
+            return
+        class_name = args[0]
+        obj_id = args[1]
+        key = f"{class_name}.{obj_id}"
+        all_instances = models.storage.all()
+
+        if key not in all_instances:
+            print("** no instance found **")
+        else:
+            print(all_instances[key])
 
     def help_show(self):
-        """Help Documentation for show command"""
+        """Docstring for show command"""
         print("Prints the string representation of \
               an instance based on the class name and id")
         print("Usage: show <class_name> <class_id>")
 
-    def do_quit(self, line):
-        """Quit command to exit the program"""
-        return True
+    def do_destroy(self, line):
+        """Destroys an instance based on the class name and id"""
+        args = line.split()
+        if len(args) == 0:
+            print("** class name missing **")
+            return
+        if args[0] not in HBNBCommand.all_classes:
+            print("** class doesn't exist **")
+            return
+        if len(args) == 1:
+            print("** instance id missing **")
+            return
+        class_name = args[0]
+        obj_id = args[1]
+        key = f"{class_name}.{obj_id}"
+        all_instances = models.storage.all()
+
+        if key not in all_instances:
+            print("** no instance found **")
+        else:
+            del all_instances[key]
+            models.storage.save()
+
+    def help_destroy(self):
+        """Docstring for destroy command"""
+        print("Deletes an instance based on class name and id")
+
+    def do_all(self, line):
+        """Prints the string representation of all instances or
+        not on the class name
+        """
+        args = line.split()
+        all_objects = models.storage.all()
+
+        if len(args) == 0:
+            all_instances = []
+            for value in all_objects.values():
+                str_obj = str(value)
+                all_instances.append(str_obj)
+            print(all_instances)
+        elif args[0] not in HBNBCommand.all_classes:
+            print("** class doesn't exist **")
+        else:
+            all_instances = []
+            for obj in all_objects.values():
+                if args[0] == obj.__class__.__name__:
+                    all_instances.append(str(obj))
+            print(all_instances)
+
+    def help_all(self):
+        """Docstring for help command"""
+        print("Prints the string representation of all instances")
+
+    def do_update(self, line):
+        """Updates an instance based on class name and id by
+        adding or updating attributes
+        """
+        args = line.split()
+        all_instances = models.storage.all()
+
+        if len(args) == 0:
+            print("** class name missing **")
+        elif args[0] not in HBNBCommand.all_classes:
+            print("** class doesn't exist **")
+        elif len(args) == 1:
+            print("** instance id missing **")
+        elif f"{args[0]}.{args[1]}" not in all_instances:
+            print("** no instance found **")
+        elif len(args) == 2:
+            print("** attribute name missing **")
+        elif len(args) == 3:
+            print("** value missing **")
+        else:
+            class_name = args[0]
+            obj_id = args[1]
+            key = f"{class_name}.{obj_id}"
+            attribute = args[2]
+            attr_value = args[3]
+            for k, value in all_instances.items():
+                if k == key:
+                    if attr_value.isdecimal():
+                        setattr(value, attribute, int(attr_value))
+                    else:
+                        try:
+                            setattr(value, attribute, float(attr_value))
+                        except ValueError:
+                            setattr(value, attribute, str(attr_value))
+            models.storage.save()
+
+    def help_update(self):
+        """Docstring for update command"""
+        print("Updates an instance with new attributes or values")
 
     def help_quit(self):
         """docstring for quit command"""
         print("Quit command to exit the program")
 
-    do_exit = do_quit
-
-    def do_EOF(self, line):
-        """Exits the program, on Ctrl+D [EOF]"""
-        print()
-        exit()   # same as return True
-
-    def help_EOF(self):
-        """docstring for EOF command"""
-        print("EOF command to exit the program")
+    help_EOF = help_quit
 
     def emptyline(self):
         """Does nothing if it's an empty line"""
         pass
 
-    def do_clear(self, line):
-        """Clears the screen"""
-        os.system('clear')
+    def do_quit(self, line):
+        """Quit command to exit the program"""
+        return True
 
-    def help_clear(self, line):
-        """Help documentation for clear screen"""
-        print("Clears the screen")
-
-    do_cls = do_clr = do_clear
+    def do_EOF(self, line):
+        """Exit Program"""
+        print("")
+        return True
 
 
 if __name__ == '__main__':
