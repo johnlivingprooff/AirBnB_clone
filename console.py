@@ -59,7 +59,7 @@ class HBNBCommand(cmd.Cmd):
         # for separate in separate_args:
         #     print(f"{separate}")
 
-            if class_name != 'BaseModel':
+            if class_name not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
 
