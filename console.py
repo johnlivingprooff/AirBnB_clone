@@ -2,7 +2,13 @@
 """Defines entry point of the command interpreter"""
 
 import cmd
+from models.amenity import Amenity
 from models.base_model import BaseModel
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
 import models
 
 
@@ -10,7 +16,7 @@ class HBNBCommand(cmd.Cmd):
     """A class that inherits a suclass named Cmd in a module named cmd"""
 
     prompt = '(hbnb) '
-    all_classes = [ "Amenity", "BaseModel", "City", "Place", "State", "Review" ]
+    all_classes = [ "Amenity", "BaseModel", "City", "Place", "State", "Review", "User" ]
 
     def do_create(self, class_name):
         """Creates a new instance of class and saves it"""
