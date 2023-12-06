@@ -7,14 +7,30 @@ from models.base_model import BaseModel
 from models.engine.file_storage import FileStorage
 
 
+
 class HBNBCommand(cmd.Cmd):
     """A class that inherits a suclass named Cmd in a module named cmd"""
 
     prompt = '(hbnb) '
 
+    def do_create(self, class_name):
+        """Creates a new instance of class and saves it"""
+        if not class_name:
+            print("** class name missing **")
+        elif class_name != "BaseModel":
+            print("** class doesn't exist **")
+        else:
+            new_instance = BaseModel()
+            new_instance.save()
+            print(new_instance.id)
+
     def help_quit(self):
         """docstring for quit command"""
         print("Quit command to exit the program")
+
+    def help_EOF(self):
+        """docstring for EOF command"""
+        print("EOF command to exit the program")
 
     def emptyline(self):
         """Does nothing if it's an empty line"""
@@ -29,10 +45,10 @@ class HBNBCommand(cmd.Cmd):
         print()
         exit() # same as return True 
     
-    do_q = do_quit
     def help_EOF(self):
         """Help Doc for EOF"""
         print("Exits the program with a newline")
+
 
     def do_create(self, args):
         """creates an instance of a model class"""
