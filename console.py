@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 """Defines entry point of the command interpreter"""
 
-import cmd, os
+import cmd
+import os
 from models import storage
 from models.base_model import BaseModel
 from models.engine.file_storage import FileStorage
-
 
 
 class HBNBCommand(cmd.Cmd):
@@ -43,19 +43,18 @@ class HBNBCommand(cmd.Cmd):
     def do_EOF(self, line):
         """Exits the program, on Ctrl+D [EOF]"""
         print()
-        exit() # same as return True 
-    
+        exit()   # same as return True
+
     def help_EOF(self):
         """Help Doc for EOF"""
         print("Exits the program with a newline")
-
 
     def do_create(self, args):
         """creates an instance of a model class"""
         if not args:
             print("** class name missing **")
             return
-        
+
         separate_args = args.split(" ")
         class_name = separate_args[0]
         if class_name == "BaseModel":
@@ -82,14 +81,14 @@ class HBNBCommand(cmd.Cmd):
         class_name = separate_args[0]
         if len(separate_args) > 1:
             class_id = separate_args[1]
-            
+
         # for separate in separate_args:
         #     print(f"{separate}")
 
             if class_name != 'BaseModel':
                 print("** class doesn't exist **")
                 return
-            
+
             key = f"{class_name}.{class_id}"
             try:
                 print(FileStorage._FileStorage__objects[key])
@@ -114,6 +113,7 @@ class HBNBCommand(cmd.Cmd):
         print("Clears the screen")
 
     do_cls = do_clr = do_clear
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
