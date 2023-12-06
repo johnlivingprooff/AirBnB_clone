@@ -1,7 +1,12 @@
 #!/usr/bin/python3
 """Defines the FileStorage class"""
 import json
+from models.amenity import Amenity
 from models.base_model import BaseModel
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
 from models.user import User
 import models
 
@@ -13,6 +18,12 @@ class FileStorage:
 
     __file_path = "file.json"
     __objects = {}
+    classes = {
+        'BaseModel': BaseModel, 'Amenity': Amenity,
+        'City': City, 'Place': Place,
+        'Review': Review, 'State': State,
+        'User': User
+    }
 
     def all(self):
         """returns the dict repr of object"""

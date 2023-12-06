@@ -4,7 +4,13 @@
 import cmd
 import os
 from models import storage
+from models.amenity import Amenity
 from models.base_model import BaseModel
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
 from models.engine.file_storage import FileStorage
 
 
@@ -12,58 +18,26 @@ class HBNBCommand(cmd.Cmd):
     """A class that inherits a suclass named Cmd in a module named cmd"""
 
     prompt = '(hbnb) '
+    classes = {
+        'BaseModel': BaseModel, 'Amenity': Amenity,
+        'City': City, 'Place': Place,
+        'Review': Review, 'State': State,
+        'User': User
+    }
 
     def do_create(self, class_name):
         """Creates a new instance of class and saves it"""
         if not class_name:
             print("** class name missing **")
-        elif class_name != "BaseModel":
+            return
+
+        elif class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
+            return
         else:
-            new_instance = BaseModel()
+            new_instance = HBNBCommand.classes[class_name]()
             new_instance.save()
             print(new_instance.id)
-
-    def help_quit(self):
-        """docstring for quit command"""
-        print("Quit command to exit the program")
-
-    def help_EOF(self):
-        """docstring for EOF command"""
-        print("EOF command to exit the program")
-
-    def emptyline(self):
-        """Does nothing if it's an empty line"""
-        pass
-
-    def do_quit(self, line):
-        """Quit command to exit the program"""
-        return True
-
-    def do_EOF(self, line):
-        """Exits the program, on Ctrl+D [EOF]"""
-        print()
-        exit()   # same as return True
-
-    def help_EOF(self):
-        """Help Doc for EOF"""
-        print("Exits the program with a newline")
-
-    def do_create(self, args):
-        """creates an instance of a model class"""
-        if not args:
-            print("** class name missing **")
-            return
-
-        separate_args = args.split(" ")
-        class_name = separate_args[0]
-        if class_name == "BaseModel":
-            instance = BaseModel()
-            print(instance.id)
-            storage.save()
-        else:
-            print("** class doesn't exist **")
-            return
 
     def help_create(self):
         """Help documentation for create"""
@@ -104,11 +78,34 @@ class HBNBCommand(cmd.Cmd):
               an instance based on the class name and id")
         print("Usage: show <class_name> <class_id>")
 
-    def do_clear(self):
+    def do_quit(self, line):
+        """Quit command to exit the program"""
+        return True
+
+    def help_quit(self):
+        """docstring for quit command"""
+        print("Quit command to exit the program")
+
+    do_exit = do_quit
+
+    def do_EOF(self, line):
+        """Exits the program, on Ctrl+D [EOF]"""
+        print()
+        exit()   # same as return True
+
+    def help_EOF(self):
+        """docstring for EOF command"""
+        print("EOF command to exit the program")
+
+    def emptyline(self):
+        """Does nothing if it's an empty line"""
+        pass
+
+    def do_clear(self, line):
         """Clears the screen"""
         os.system('clear')
 
-    def help_clear(self):
+    def help_clear(self, line):
         """Help documentation for clear screen"""
         print("Clears the screen")
 
