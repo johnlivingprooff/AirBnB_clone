@@ -18,12 +18,6 @@ class FileStorage:
 
     __file_path = "file.json"
     __objects = {}
-    classes = {
-        'BaseModel': BaseModel, 'Amenity': Amenity,
-        'City': City, 'Place': Place,
-        'Review': Review, 'State': State,
-        'User': User
-    }
 
     def all(self):
         """returns the dict repr of object"""
@@ -50,7 +44,8 @@ class FileStorage:
     def reload(self):
         """Deserialisation:
         loads a json file to the objects dict
-        if the file exisit"""
+        if the file exist
+        """
         try:
             with open(self.__file_path, 'r', encoding='utf-8') as data_file:
                 new_obj = json.load(data_file)
