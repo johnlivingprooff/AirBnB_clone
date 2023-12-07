@@ -151,6 +151,18 @@ class TestBaseModel(unittest.TestCase):
             }
         self.assertDictEqual(obj_dict, dictionary)
 
+    def test_equality(self):
+        """Test if two instances with the same attributes are equal"""
+        obj1 = BaseModel(name='Object1')
+        obj2 = BaseModel(name='Object1')
+        self.assertEqual(obj1.name, obj2.name)
+
+    def test_inequality(self):
+        """Test if two instances with different attributes are not equal"""
+        obj1 = BaseModel(name='Object1')
+        obj2 = BaseModel(name='Object2')
+        self.assertNotEqual(obj1, obj2)
+
     def test_multiple_instances(self):
         """Test the behavior of multiple instances"""
         obj1 = BaseModel(id='State1')
@@ -190,6 +202,19 @@ class TestBaseModel(unittest.TestCase):
         mock_all.return_value = {'some_key': 'some_value'}
         result = storage.all()
         self.assertIsInstance(result, dict)
+
+    # OTHER EDGE CASES
+    def test_empty_name(self):
+        """Test if the class handles empty name"""
+        obj = BaseModel(name='')
+        self.assertEqual(obj.name, '')
+
+    def test_custom_attribute_assignment(self):
+        """Test if the class handles custom attribute assignment"""
+        obj = BaseModel()
+        obj.custom_attribute = 'custom_value'
+        self.assertEqual(obj.custom_attribute, 'custom_value')
+
 
 
 if __name__ == '__main__':

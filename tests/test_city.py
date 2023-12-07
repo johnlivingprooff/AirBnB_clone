@@ -163,5 +163,24 @@ class TestCity(unittest.TestCase):
         result = storage.all()
         self.assertIsInstance(result, dict)
 
+    # Other Edge cases
+    def test_custom_id_assignment(self):
+        """Test if the class handles custom ID assignment"""
+        custom_id = 'custom_id_123'
+        city = City(id=custom_id)
+        self.assertEqual(city.id, custom_id)
+
+    def test_empty_state_id(self):
+        """Test if the class handles empty state_id"""
+        city = City(state_id='')
+        self.assertEqual(city.state_id, '')
+
+    def test_none_name(self):
+        """Test if the class handles None name"""
+        city = City(name=None)
+        self.assertIsNone(city.name)
+
+
+
 if __name__ == '__main__':
     unittest.main()

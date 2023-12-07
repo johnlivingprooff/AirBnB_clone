@@ -176,6 +176,16 @@ class TestUser(unittest.TestCase):
         result = storage.all()
         self.assertIsInstance(result, dict)
 
+    def test_empty_first_name(self):
+        """Test if the class handles empty first_name"""
+        user = User(first_name='')
+        self.assertEqual(user.first_name, '')
+
+    def test_none_last_name(self):
+        """Test if the class handles None last_name"""
+        user = User(last_name=None)
+        self.assertIsNone(user.last_name)
+
 
 if __name__ == '__main__':
     unittest.main()
