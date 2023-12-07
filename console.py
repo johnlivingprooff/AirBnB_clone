@@ -24,6 +24,7 @@ class HBNBCommand(cmd.Cmd):
         """Default behaviour of cmd if input is invalid"""
         command_dict = {
                     "all": self.do_all,
+                    "count": self.do_count,
                 }
         is_match = re.search(r"\.", arg)
         if is_match:
@@ -172,6 +173,22 @@ class HBNBCommand(cmd.Cmd):
     def help_update(self):
         """Docstring for update command"""
         print("Updates an instance with new attributes or values")
+
+    def do_count(self, line):
+        """Retrieves the number of instances of a class"""
+        args = line.split()
+        all_instances = models.storage.all()
+        number_of_instances = 0
+
+        for obj in all_instances.values():
+            if args[0] == obj.__class__.__name__:
+                number_of_instances += 1
+
+        print(number_of_instances)
+
+    def help_count(self):
+        """Docstring for count method"""
+        print("Returns number of instances of a class")
 
     def help_quit(self):
         """docstring for quit command"""
