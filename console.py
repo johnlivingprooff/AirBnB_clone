@@ -2,6 +2,7 @@
 """Defines entry point of the command interpreter"""
 
 import cmd
+import re    # Module for Regular Expression
 from models.amenity import Amenity
 from models.base_model import BaseModel
 from models.city import City
@@ -16,7 +17,23 @@ class HBNBCommand(cmd.Cmd):
     """A class that inherits a suclass named Cmd in a module named cmd"""
 
     prompt = '(hbnb) '
-    all_classes = [ "Amenity", "BaseModel", "City", "Place", "State", "Review", "User" ]
+    all_classes = ["Amenity", "BaseModel", "City", "Place",
+                   "State", "Review", "User"]
+
+    def default(self, arg):
+        """Default behaviour of cmd if input is invalid"""
+        command_dict = {
+                    "all": self.do_all,
+                }
+        is_match = re.search(r"\.", arg)
+        if is_match:
+            args = [arg[:is_match.span()[0]], arg[is_match.span()[1]:]]
+            match = re.search(r"\((.*?)\)", args[1])
+            if match:
+                command = [args[1][:match.span()[0]], match.group()[1:-1]]
+                if command[0] in command_dict:
+                    func_call = f"{args[0]} {command[1]}"
+                    return command_dict[command[0]](func_call)
 
     def do_create(self, class_name):
         """Creates a new instance of class and saves it"""
