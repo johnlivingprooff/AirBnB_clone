@@ -2,7 +2,14 @@
 """Defines the FileStorage class"""
 import json
 from models.base_model import BaseModel
+from models.amenity import Amenity
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
 import models
+
 
 class FileStorage:
     """the FileStorage class that stores dictionary
@@ -15,7 +22,7 @@ class FileStorage:
     def all(self):
         """returns the dict repr of object"""
         return self.__objects
-    
+
     def new(self, obj):
         """populates the objects dict with new obj
         using obj_class_name.id as the key
@@ -33,7 +40,7 @@ class FileStorage:
             temp_dict[key] = value.to_dict()
         with open(self.__file_path, 'w', encoding='utf-8') as data_file:
             json.dump(temp_dict, data_file)
-        
+
     def reload(self):
         """Deserialisation:
         loads a json file to the objects dict
