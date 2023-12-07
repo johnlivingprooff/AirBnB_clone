@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Unittest for BaseModel"""
 import unittest
+from unittest.mock import patch
 from datetime import datetime
 from models import storage
 from models.base_model import BaseModel
@@ -9,11 +10,13 @@ from models.base_model import BaseModel
 class TestBaseModel(unittest.TestCase):
     """Test cases for the BaseModel Class"""
 
+    # BASIC TESTS
+
     def test_instance(self):
         """test instantisation"""
         obj = BaseModel()
         self.assertIsInstance(obj, BaseModel)
-    
+
     def test_instance_hasattr(self):
         """Tests if an instance has attributes"""
         obj = BaseModel()
@@ -35,10 +38,10 @@ class TestBaseModel(unittest.TestCase):
         obj_u_at = datetime.strptime(_updated_at, d_format)
         obj = BaseModel(id=_id, created_at=_created_at, updated_at=_updated_at)
 
-        self.assertEqual(obj.id, _id )
-        self.assertEqual(obj.created_at, obj_c_at )
-        self.assertEqual(obj.updated_at, obj_u_at )
-        
+        self.assertEqual(obj.id, _id)
+        self.assertEqual(obj.created_at, obj_c_at)
+        self.assertEqual(obj.updated_at, obj_u_at)
+
     def test_str_method(self):
         """testing the __str__ method"""
         obj = BaseModel()
@@ -61,7 +64,11 @@ class TestBaseModel(unittest.TestCase):
 
         obj = BaseModel(id=_id, created_at=_created_at, updated_at=_updated_at)
         obj_dict = obj.to_dict()
-        dictionary = {'id': '7q795', 'created_at': "2023-12-07T09:49:07.936066", 'updated_at': "2023-12-07T09:49:07.936176", '__class__': "BaseModel"}
+        dictionary = {
+            'id': '7q795', 'created_at': "2023-12-07T09:49:07.936066",
+            'updated_at': "2023-12-07T09:49:07.936176",
+            '__class__': "BaseModel",
+            }
         self.assertEqual(dictionary, obj_dict)
 
     def test_inst_from_dict(self):
@@ -69,6 +76,81 @@ class TestBaseModel(unittest.TestCase):
 
     def test_custom_datetime_format(self):
         pass
+
+    # ATTRIBUTES TESTS
+
+    def test_id_attribute(self):
+        """When assigning an id to instance"""
+        obj = BaseModel(id="7e156w")
+        self.assertEqual("7e156w", obj.id)
+
+    def test_created_at(self):
+        """Assigning created at time"""
+        d_format = "%Y-%m-%dT%H:%M:%S.%f"
+        same_date = "2023-12-07T16:16:21.285406"
+        obj = BaseModel(created_at=same_date)
+        obj_c_at = datetime.strptime(same_date, d_format)
+        self.assertEqual(obj_c_at, obj.created_at)
+
+    def test_updated_at(self):
+        """Assigning updated at"""
+        d_format = "%Y-%m-%dT%H:%M:%S.%f"
+        same_date = "2023-12-07T16:16:21.285406"
+        obj = BaseModel(updated_at=same_date)
+        obj_u_at = datetime.strptime(same_date, d_format)
+        self.assertEqual(obj_u_at, obj.updated_at)
+
+    def test_changeTo_updated_at(self):
+        """Checking if updated at changes"""
+        obj = BaseModel()
+        update_one = obj.updated_at
+        obj.save()
+        self.assertNotEqual(update_one, obj.updated_at)
+
+    def test_new_args(self):
+        """when passed new arg"""
+        _id = "7q795"
+        _created_at = "2023-12-07T09:49:07.936066"
+        _updated_at = "2023-12-07T09:49:07.936176"
+
+        obj = BaseModel(
+            name="object name", id=_id,
+            created_at=_created_at, updated_at=_updated_at)
+        obj_dict = obj.to_dict()
+        dictionary = {
+            'id': '7q795', 'created_at': "2023-12-07T09:49:07.936066",
+            'updated_at': "2023-12-07T09:49:07.936176",
+            '__class__': "BaseModel", 'name': "object name"
+            }
+        self.assertDictEqual(obj_dict, dictionary)
+
+    # FILE STORAGE INTEGRATION
+
+    @patch('models.storage.save')  # helpst to mock save method
+    def test_save_method_updates_storage(self, mock_save):
+        """Test whether models.storage.save
+        is called and updates the storage
+        """
+        obj = BaseModel()
+        original_updated_at = obj.updated_at
+
+        # Modify some attributes to trigger the need to save
+        obj.some_attribute = 'new_value'
+
+        obj.save()
+        mock_save.assert_called_once()
+
+        # Verify that updated_at has changed after saving
+        self.assertNotEqual(original_updated_at, obj.updated_at)
+
+    @patch('models.storage.new')  # helps to mock the new method
+    def test_new_method_called_on_instance_creation(self, mock_new):
+        """Test whether models.storage.new
+        is called when creating an instance
+        """
+        obj = BaseModel()
+        mock_new.assert_called_once_with(obj)
+
 
 if __name__ == '__main__':
     unittest.main()
