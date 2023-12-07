@@ -82,30 +82,24 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(new_obj.created_at, obj.created_at)
         self.assertEqual(new_obj.updated_at, obj.updated_at)
 
-
     def test_custom_datetime_format(self):
-        """Test the creation of an instance from a dictionary with custom date format"""
-        
+        """Test the creation of an instance
+        from a dictionary with custom date format"""
+
         _created_at = "2023-12-07T09:49:07.936066"
         _updated_at = "2023-12-07T09:49:07.936176"
         d_format = "%Y-%m-%dT%H:%M:%S.%f"
         obj = BaseModel()
         obj_dict = obj.to_dict()
-
         obj_dict['created_at'] = _created_at
         obj_dict['updated_at'] = _updated_at
-
-
         obj_c_at = datetime.strptime(_created_at, d_format)
         obj_u_at = datetime.strptime(_updated_at, d_format)
-
         self.assertIsInstance(obj, BaseModel)
         self.assertNotEqual(obj.created_at, obj_c_at)
         self.assertNotEqual(obj.updated_at, obj_u_at)
 
-
     # ATTRIBUTES TESTS
-
     def test_id_attribute(self):
         """When assigning an id to instance"""
         obj = BaseModel(id="7e156w")
@@ -139,7 +133,6 @@ class TestBaseModel(unittest.TestCase):
         _id = "7q795"
         _created_at = "2023-12-07T09:49:07.936066"
         _updated_at = "2023-12-07T09:49:07.936176"
-
         obj = BaseModel(
             name="object name", id=_id,
             created_at=_created_at, updated_at=_updated_at)
@@ -170,7 +163,6 @@ class TestBaseModel(unittest.TestCase):
         self.assertNotEqual(obj1, obj2)
 
     # FILE STORAGE INTEGRATION
-
     @patch('models.storage.save')  # helpst to mock save method
     def test_save_method_updates_storage(self, mock_save):
         """Test whether models.storage.save
@@ -214,7 +206,6 @@ class TestBaseModel(unittest.TestCase):
         obj = BaseModel()
         obj.custom_attribute = 'custom_value'
         self.assertEqual(obj.custom_attribute, 'custom_value')
-
 
 
 if __name__ == '__main__':

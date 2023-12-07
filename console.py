@@ -206,14 +206,14 @@ class HBNBCommand(cmd.Cmd):
     def do_quit(self, line):
         """Quit command to exit the program"""
         return True
-    
+
     do_exit = do_quit
 
     def do_EOF(self, line):
         """Exit Program"""
         print("")
         return True
-    
+
     def do_clear(self, line):
         """clears screen"""
         os.system('clear')

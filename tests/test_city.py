@@ -181,6 +181,5 @@ class TestCity(unittest.TestCase):
         self.assertIsNone(city.name)
 
 
-
 if __name__ == '__main__':
     unittest.main()
