@@ -4,6 +4,7 @@ import json
 from models.base_model import BaseModel
 import models
 
+
 class FileStorage:
     """the FileStorage class that stores dictionary
     representations of objects in a json file
@@ -15,7 +16,7 @@ class FileStorage:
     def all(self):
         """returns the dict repr of object"""
         return self.__objects
-    
+
     def new(self, obj):
         """populates the objects dict with new obj
         using obj_class_name.id as the key
@@ -33,7 +34,7 @@ class FileStorage:
             temp_dict[key] = value.to_dict()
         with open(self.__file_path, 'w', encoding='utf-8') as data_file:
             json.dump(temp_dict, data_file)
-        
+
     def reload(self):
         """Deserialisation:
         loads a json file to the objects dict
