@@ -8,7 +8,6 @@ from models.city import City
 from models.base_model import BaseModel
 
 
-
 class TestCity(unittest.TestCase):
     """Test cases for City class"""
 
@@ -57,7 +56,7 @@ class TestCity(unittest.TestCase):
 
         obj = City(
             id=_id, created_at=_created_at, updated_at=_updated_at,
-            state_id = _state_id, name = _name)
+            state_id=_state_id, name=_name)
         obj_dict = obj.to_dict()
         dictionary = {
             'id': '7q795', 'created_at': "2023-12-07T09:49:07.936066",
@@ -89,7 +88,7 @@ class TestCity(unittest.TestCase):
         obj_u_at = datetime.strptime(_updated_at, d_format)
         obj = City(created_at=_updated_at)
         self.assertEqual(obj.created_at, obj_u_at)
-    
+
     def test_with_args_state_id(self):
         """Test with specific state id"""
         _state_id = "oldState"
@@ -111,7 +110,9 @@ class TestCity(unittest.TestCase):
     # FileStorage Tests
     @patch('models.storage.save')
     def test_save_method_updates_storage(self, mock_save):
-        """Test whether models.storage.save is called and updates the storage"""
+        """Test whether models.storage.save
+        is called and updates the storage
+        """
         city = City()
         original_updated_at = city.updated_at
         city.name = 'NewCityName'
@@ -126,6 +127,7 @@ class TestCity(unittest.TestCase):
         """
         obj = City()
         mock_new.assert_called_once_with(obj)
+
 
 if __name__ == '__main__':
     unittest.main()
