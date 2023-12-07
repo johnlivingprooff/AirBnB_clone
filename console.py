@@ -2,6 +2,7 @@
 """Defines entry point of the command interpreter"""
 
 import cmd
+import os   # For clear screen operation
 import re    # Module for Regular Expression
 from models.amenity import Amenity
 from models.base_model import BaseModel
@@ -24,6 +25,9 @@ class HBNBCommand(cmd.Cmd):
         """Default behaviour of cmd if input is invalid"""
         command_dict = {
                     "all": self.do_all,
+                    "count": self.do_count,
+                    "show": self.do_show,
+                    "destroy": self.do_destroy,
                 }
         is_match = re.search(r"\.", arg)
         if is_match:
@@ -173,6 +177,22 @@ class HBNBCommand(cmd.Cmd):
         """Docstring for update command"""
         print("Updates an instance with new attributes or values")
 
+    def do_count(self, line):
+        """Retrieves the number of instances of a class"""
+        args = line.split()
+        all_instances = models.storage.all()
+        number_of_instances = 0
+
+        for obj in all_instances.values():
+            if args[0] == obj.__class__.__name__:
+                number_of_instances += 1
+
+        print(number_of_instances)
+
+    def help_count(self):
+        """Docstring for count method"""
+        print("Returns number of instances of a class")
+
     def help_quit(self):
         """docstring for quit command"""
         print("Quit command to exit the program")
@@ -186,11 +206,17 @@ class HBNBCommand(cmd.Cmd):
     def do_quit(self, line):
         """Quit command to exit the program"""
         return True
+    
+    do_exit = do_quit
 
     def do_EOF(self, line):
         """Exit Program"""
         print("")
         return True
+    
+    def do_clear(self, line):
+        """clears screen"""
+        os.system('clear')
 
 
 if __name__ == '__main__':
