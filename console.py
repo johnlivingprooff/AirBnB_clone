@@ -25,6 +25,8 @@ class HBNBCommand(cmd.Cmd):
         command_dict = {
                     "all": self.do_all,
                     "count": self.do_count,
+                    "show": self.do_show,
+                    "destroy": self.do_destroy,
                 }
         is_match = re.search(r"\.", arg)
         if is_match:
