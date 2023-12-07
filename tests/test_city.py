@@ -66,6 +66,12 @@ class TestCity(unittest.TestCase):
             }
         self.assertEqual(dictionary, obj_dict)
 
+    def test_multiple_instances(self):
+        """Test the behavior of multiple instances"""
+        city1 = City(name='City1', state_id='State1')
+        city2 = City(name='City2', state_id='State2')
+        self.assertNotEqual(city1, city2)
+
     # ATTRIBUTES TESTS
     def test_with_args_id(self):
         """Test with specific args"""
@@ -107,6 +113,28 @@ class TestCity(unittest.TestCase):
         self.assertTrue(hasattr(obj, 'state_id'))
         self.assertTrue(hasattr(obj, 'name'))
 
+    def test_equality(self):
+        """Test if two instances with the same attributes are equal"""
+        city1 = City(name='Springfield', state_id='IL')
+        city2 = City(name='Springfield', state_id='IL')
+        self.assertEqual(city1.name, city2.name)
+
+    def test_inequality(self):
+        """Test if two instances with different attributes are not equal"""
+        city1 = City(name='Springfield', state_id='IL')
+        city2 = City(name='Shelbyville', state_id='IL')
+        self.assertNotEqual(city1, city2)
+
+    def test_empty_name(self):
+        """Test if the class handles empty name"""
+        city = City(name='')
+        self.assertEqual(city.name, '')
+
+    def test_none_state_id(self):
+        """Test if the class handles None state_id"""
+        city = City(state_id=None)
+        self.assertIsNone(city.state_id)
+
     # FileStorage Tests
     @patch('models.storage.save')
     def test_save_method_updates_storage(self, mock_save):
@@ -128,6 +156,12 @@ class TestCity(unittest.TestCase):
         obj = City()
         mock_new.assert_called_once_with(obj)
 
+    @patch('models.storage.all')
+    def test_all_method_returns_dict(self, mock_all):
+        """Test whether models.storage.all returns a dictionary"""
+        mock_all.return_value = {'some_key': 'some_value'}
+        result = storage.all()
+        self.assertIsInstance(result, dict)
 
 if __name__ == '__main__':
     unittest.main()

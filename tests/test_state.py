@@ -59,6 +59,24 @@ class TestState(unittest.TestCase):
             }
         self.assertEqual(dictionary, obj_dict)
 
+    def test_equality(self):
+        """Test if two instances with the same attributes are equal"""
+        state1 = State(name='California')
+        state2 = State(name='California')
+        self.assertEqual(state1.name, state2.name)
+
+    def test_inequality(self):
+        """Test if two instances with different attributes are not equal"""
+        state1 = State(name='California')
+        state2 = State(name='New York')
+        self.assertNotEqual(state1, state2)
+
+    def test_multiple_instances(self):
+        """Test the behavior of multiple instances"""
+        obj1 = State(name='State1')
+        obj2 = State(name='State2')
+        self.assertNotEqual(obj1, obj2)
+
     # ATTRIBUTES TESTS
     def test_with_args_id(self):
         """Test with specific args"""
@@ -93,6 +111,16 @@ class TestState(unittest.TestCase):
         obj = State()
         self.assertTrue(hasattr(obj, 'name'))
 
+    def test_empty_name(self):
+        """Test if the class handles empty name"""
+        state = State(name='')
+        self.assertEqual(state.name, '')
+
+    def test_none_name(self):
+        """Test if the class handles None created_at"""
+        state = State(name=None)
+        self.assertIsNone(state.name)
+
     # FileStorage Tests
     @patch('models.storage.save')
     def test_save_method_updates_storage(self, mock_save):
@@ -113,6 +141,13 @@ class TestState(unittest.TestCase):
         """
         obj = State()
         mock_new.assert_called_once_with(obj)
+
+    @patch('models.storage.all')
+    def test_all_method_returns_dict(self, mock_all):
+        """Test whether models.storage.all returns a dictionary"""
+        mock_all.return_value = {'some_key': 'some_value'}
+        result = storage.all()
+        self.assertIsInstance(result, dict)
 
 
 if __name__ == '__main__':

@@ -65,6 +65,12 @@ class TestUser(unittest.TestCase):
             }
         self.assertEqual(dictionary, obj_dict)
 
+    def test_multiple_instances(self):
+        """Test the behavior of multiple instances"""
+        obj1 = User(email='email1@mail.com')
+        obj2 = User(email='email2@mail.com')
+        self.assertNotEqual(obj1, obj2)
+
     # ATTRIBUTES TESTS
     def test_with_args_id(self):
         """Test with specific args"""
@@ -122,7 +128,6 @@ class TestUser(unittest.TestCase):
         user = User(password=None)
         self.assertIsNone(user.password)
 
-
     def test_instance_has_class_attr(self):
         """Tests if an instance has class attributes"""
         obj = User()
@@ -163,6 +168,13 @@ class TestUser(unittest.TestCase):
         """
         obj = User()
         mock_new.assert_called_once_with(obj)
+
+    @patch('models.storage.all')
+    def test_all_method_returns_dict(self, mock_all):
+        """Test whether models.storage.all returns a dictionary"""
+        mock_all.return_value = {'some_key': 'some_value'}
+        result = storage.all()
+        self.assertIsInstance(result, dict)
 
 
 if __name__ == '__main__':

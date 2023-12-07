@@ -72,10 +72,37 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(dictionary, obj_dict)
 
     def test_inst_from_dict(self):
-        pass
+        """Test the creation of an instance from a dictionary"""
+        obj = BaseModel()
+        obj_dict = obj.to_dict()
+
+        new_obj = BaseModel(**obj_dict)
+        self.assertIsInstance(new_obj, BaseModel)
+        self.assertEqual(new_obj.id, obj.id)
+        self.assertEqual(new_obj.created_at, obj.created_at)
+        self.assertEqual(new_obj.updated_at, obj.updated_at)
+
 
     def test_custom_datetime_format(self):
-        pass
+        """Test the creation of an instance from a dictionary with custom date format"""
+        
+        _created_at = "2023-12-07T09:49:07.936066"
+        _updated_at = "2023-12-07T09:49:07.936176"
+        d_format = "%Y-%m-%dT%H:%M:%S.%f"
+        obj = BaseModel()
+        obj_dict = obj.to_dict()
+
+        obj_dict['created_at'] = _created_at
+        obj_dict['updated_at'] = _updated_at
+
+
+        obj_c_at = datetime.strptime(_created_at, d_format)
+        obj_u_at = datetime.strptime(_updated_at, d_format)
+
+        self.assertIsInstance(obj, BaseModel)
+        self.assertNotEqual(obj.created_at, obj_c_at)
+        self.assertNotEqual(obj.updated_at, obj_u_at)
+
 
     # ATTRIBUTES TESTS
 
@@ -124,6 +151,12 @@ class TestBaseModel(unittest.TestCase):
             }
         self.assertDictEqual(obj_dict, dictionary)
 
+    def test_multiple_instances(self):
+        """Test the behavior of multiple instances"""
+        obj1 = BaseModel(id='State1')
+        obj2 = BaseModel(id='State2')
+        self.assertNotEqual(obj1, obj2)
+
     # FILE STORAGE INTEGRATION
 
     @patch('models.storage.save')  # helpst to mock save method
@@ -150,6 +183,13 @@ class TestBaseModel(unittest.TestCase):
         """
         obj = BaseModel()
         mock_new.assert_called_once_with(obj)
+
+    @patch('models.storage.all')
+    def test_all_method_returns_dict(self, mock_all):
+        """Test whether models.storage.all returns a dictionary"""
+        mock_all.return_value = {'some_key': 'some_value'}
+        result = storage.all()
+        self.assertIsInstance(result, dict)
 
 
 if __name__ == '__main__':
