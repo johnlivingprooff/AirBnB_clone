@@ -10,7 +10,30 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
+from shlex import split
 import models
+
+
+def _parse(arg):
+    """Using regular expressions to find curly braces
+    and square brackets
+    """
+    curly_braces_match = re.search(r"\{(.*?)\}", arg)
+    brackets_match = re.search(r"\[(.*?)\]", arg)
+
+    if curly_braces_match is None:
+        if brackets_match is None:
+            return [token.strip(",") for token in arg.split()]
+        else:
+            tokens_list = arg[:brackets_match.span()[0]].split()
+            tokens = [token.strip(",") for token in tokens_list]
+            tokens.append(brackets_match.group())
+            return tokens
+    else:
+        tokens_list = arg[:curly_braces_match.span()[0]].split()
+        tokens = [token.strip(",") for token in tokens_list]
+        tokens.append(curly_braces_match.group())
+        return tokens
 
 
 class HBNBCommand(cmd.Cmd):
@@ -27,10 +50,11 @@ class HBNBCommand(cmd.Cmd):
                     "count": self.do_count,
                     "show": self.do_show,
                     "destroy": self.do_destroy,
+                    "update": self.do_update,
                 }
-        is_match = re.search(r"\.", arg)
-        if is_match:
-            args = [arg[:is_match.span()[0]], arg[is_match.span()[1]:]]
+        match = re.search(r"\.", arg)
+        if match:
+            args = [arg[:match.span()[0]], arg[match.span()[1]:]]
             match = re.search(r"\((.*?)\)", args[1])
             if match:
                 command = [args[1][:match.span()[0]], match.group()[1:-1]]
@@ -46,7 +70,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
         else:
             new_instance = eval("{}()".format(class_name))
-            new_instance.save()
+            models.storage.save()
             print(new_instance.id)
 
     def help_create(self):
@@ -57,25 +81,18 @@ class HBNBCommand(cmd.Cmd):
         """Prints the string representation of an instance
         based on the class name and id
         """
-        args = line.split()
+        args = _parse(line)
+        all_instances = models.storage.all()
         if len(args) == 0:
             print("** class name missing **")
-            return
-        if args[0] not in HBNBCommand.all_classes:
+        elif args[0] not in HBNBCommand.all_classes:
             print("** class doesn't exist **")
-            return
-        if len(args) == 1:
+        elif len(args) == 1:
             print("** instance id missing **")
-            return
-        class_name = args[0]
-        obj_id = args[1]
-        key = f"{class_name}.{obj_id}"
-        all_instances = models.storage.all()
-
-        if key not in all_instances:
+        elif f"{args[0]}.{args[1]}" not in all_instances:
             print("** no instance found **")
         else:
-            print(all_instances[key])
+            print(all_instances[f"{args[0]}.{args[1]}"])
 
     def help_show(self):
         """Docstring for show command"""
@@ -85,25 +102,18 @@ class HBNBCommand(cmd.Cmd):
 
     def do_destroy(self, line):
         """Destroys an instance based on the class name and id"""
-        args = line.split()
+        args = _parse(line)
+        all_instances = models.storage.all()
         if len(args) == 0:
             print("** class name missing **")
-            return
-        if args[0] not in HBNBCommand.all_classes:
+        elif args[0] not in HBNBCommand.all_classes:
             print("** class doesn't exist **")
-            return
-        if len(args) == 1:
+        elif len(args) == 1:
             print("** instance id missing **")
-            return
-        class_name = args[0]
-        obj_id = args[1]
-        key = f"{class_name}.{obj_id}"
-        all_instances = models.storage.all()
-
-        if key not in all_instances:
+        elif f"{args[0]}.{args[1]}" not in all_instances:
             print("** no instance found **")
         else:
-            del all_instances[key]
+            del all_instances[f"{args[0]}.{args[1]}"]
             models.storage.save()
 
     def help_destroy(self):
@@ -114,14 +124,13 @@ class HBNBCommand(cmd.Cmd):
         """Prints the string representation of all instances or
         not on the class name
         """
-        args = line.split()
+        args = _parse(line)
         all_objects = models.storage.all()
 
         if len(args) == 0:
             all_instances = []
-            for value in all_objects.values():
-                str_obj = str(value)
-                all_instances.append(str_obj)
+            for obj in all_objects.values():
+                all_instances.append(obj.__str__())
             print(all_instances)
         elif args[0] not in HBNBCommand.all_classes:
             print("** class doesn't exist **")
@@ -129,7 +138,7 @@ class HBNBCommand(cmd.Cmd):
             all_instances = []
             for obj in all_objects.values():
                 if args[0] == obj.__class__.__name__:
-                    all_instances.append(str(obj))
+                    all_instances.append(obj.__str__())
             print(all_instances)
 
     def help_all(self):
@@ -140,7 +149,7 @@ class HBNBCommand(cmd.Cmd):
         """Updates an instance based on class name and id by
         adding or updating attributes
         """
-        args = line.split()
+        args = _parse(line)
         all_instances = models.storage.all()
 
         if len(args) == 0:
@@ -178,7 +187,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_count(self, line):
         """Retrieves the number of instances of a class"""
-        args = line.split()
+        args = _parse(line)
         all_instances = models.storage.all()
         number_of_instances = 0
 
