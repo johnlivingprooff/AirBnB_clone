@@ -2,7 +2,6 @@
 """Defines entry point of the command interpreter"""
 
 import cmd
-import os   # For clear screen operation
 import re    # Module for Regular Expression
 from models.amenity import Amenity
 from models.base_model import BaseModel
@@ -198,6 +197,7 @@ class HBNBCommand(cmd.Cmd):
         print("Quit command to exit the program")
 
     help_EOF = help_quit
+    help_exit = help_quit
 
     def emptyline(self):
         """Does nothing if it's an empty line"""
@@ -213,10 +213,6 @@ class HBNBCommand(cmd.Cmd):
         """Exit Program"""
         print("")
         return True
-
-    def do_clear(self, line):
-        """clears screen"""
-        os.system('clear')
 
 
 if __name__ == '__main__':
