@@ -24,7 +24,7 @@ class FileStorage:
         return self.__objects
 
     def new(self, obj):
-        """populates the objects dict with new obj
+        """populates the __objects dict with new obj
         using obj_class_name.id as the key
         """
         key = f"{obj.__class__.__name__}.{obj.id}"
