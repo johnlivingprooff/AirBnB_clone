@@ -2,6 +2,7 @@
 """Test cases for file storage"""
 import unittest
 import os
+import json
 from unittest.mock import patch
 from unittest.mock import mock_open
 from models.base_model import BaseModel
@@ -10,6 +11,16 @@ from models import storage
 
 class TestFileStorage(unittest.TestCase):
     """Defines the test class for FileStorage testcases"""
+
+    # For test_reload method
+    read_data = {
+        "BaseModel.1": {
+            "__class__": "BaseModel",
+            "id": "1",
+            }
+        }
+    data_str = json.dumps(read_data)
+
     def setUp(self):
         """Reset the objects dictionary and
         reopen the file before each test
@@ -39,6 +50,28 @@ class TestFileStorage(unittest.TestCase):
         key = f"BaseModel.{obj.id}"
         self.assertIn(key, storage._FileStorage__objects)
         self.assertEqual(storage._FileStorage__objects[key], obj)
+
+    def test_save(self):
+        """Test the save method, whether objects
+        are correctly serialized to a JSON file
+        """
+        obj = BaseModel()
+        storage.new(obj)
+        storage.save()
+        with open(storage._FileStorage__file_path, 'r') as data_file:
+            data = json.load(data_file)
+        self.assertEqual(data[f"BaseModel.{obj.id}"], obj.to_dict())
+
+    @patch("builtins.open", new_callable=mock_open, read_data=json.dumps(read_data))
+    def test_reload(self, mock_open_file):
+        """Test the reload method, whether objects
+        are correctly deserialized from a JSON file
+        """
+        storage.reload()
+        obj = BaseModel()
+        obj.id = "1"
+        key = f"BaseModel.{obj.id}"
+        self.assertEqual(storage._FileStorage__objects[key].id, obj.id)
 
     # FILE STORAGE TESTS
     @patch('models.storage.save')  # helpst to mock save method
