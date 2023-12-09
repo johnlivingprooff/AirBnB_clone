@@ -27,60 +27,79 @@ To use the command interpreter, simply type in any of these commands: ```create`
 ***Starting the Console:***
 
 First clone the repository to you local device:
+
 ```bash
-$ git clone https://github.com/johnlivingprooff/AirBnB_clone.git
+$git clone https://github.com/johnlivingprooff/AirBnB_clone.git
 
 ```
+
 Then enter into the repository:
+
 ```bash
-$ cd AirBnB_clone/
+$cd AirBnB_clone/
 ```
+
 Run the `console.py` file
+
 ```bash
-$ ./console.py
+$./console.py
 ```
+
 ```bash
 (hbnb) 
 ```
+
 This would start the `console`, to use the console, we can use any of above commands, e.g.
 
-## Create an Object:
+## Create an Object
 
 ```bash
 (hbnb) create User
 0c4d4ec-51c5-4741-8bbe-17ba0c0b65f0
 (hbnb)
 ```
+
 This creates a User class object, and prints out the `User.id`
 
-## Show an Object:
+## Show an Object
+
 This shows the string representation of an Object, to find out more about the `show` command, you could do this:
+
 ```bash
+
 (hbnb) ? show
 ```
+
 ```bash
 This command shows the string representation an Object
 Usage: show <class_name> <class_id>
 (hbnb) 
 ```
+
 ***Example:***
+
 ```bash
 (hbnb) show User 70c4d4ec-51c5-4741-8bbe-17ba0c0b65f0
 [User] (70c4d4ec-51c5-4741-8bbe-17ba0c0b65f0) {'id': '70c4d4ec-51c5-4741-8bbe-17ba0c0b65f0', 'created_at': datetime.datetime(2023, 12, 9, 14, 26, 45, 351538), 'updated_at': datetime.datetime(2023, 12, 9, 14, 26, 45, 351564)}
 (hbnb) 
 ```
 
-## Delete an Object:
+## Delete an Object
+
 This deletes an Object from storage, to find out more about the `destroy` command, you could do this:
+
 ```bash
 (hbnb) ? destroy
 ```
+
 ```bash
 This command destroys an Object instance
 Usage: destroy <class_name> <class_id>
 (hbnb) 
 ```
+
 ***Example:***
+
 ```bash
 (hbnb) destroy User 70c4d4ec-51c5-4741-8bbe-17ba0c0b65f0
 (hbnb) show User 70c4d4ec-51c5-4741-8bbe-17ba0c0b65f0
