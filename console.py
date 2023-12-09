@@ -19,18 +19,18 @@ def _parse(arg):
     and square brackets
     """
     curly_braces_match = re.search(r"\{(.*?)\}", arg)
-    brackets_match = re.search(r"\[(.*?)\]", arg)
+    parentheses_match = re.search(r"\[(.*?)\]", arg)
 
     if curly_braces_match is None:
-        if brackets_match is None:
-            return [token.strip(",") for token in arg.split()]
+        if parentheses_match is None:
+            return [token.strip(",") for token in split(arg)]
         else:
-            tokens_list = arg[:brackets_match.span()[0]].split()
+            tokens_list = split(arg[:parentheses_match.span()[0]])
             tokens = [token.strip(",") for token in tokens_list]
-            tokens.append(brackets_match.group())
+            tokens.append(parentheses_match.group())
             return tokens
     else:
-        tokens_list = arg[:curly_braces_match.span()[0]].split()
+        tokens_list = split(arg[:curly_braces_match.span()[0]])
         tokens = [token.strip(",") for token in tokens_list]
         tokens.append(curly_braces_match.group())
         return tokens
@@ -61,6 +61,8 @@ class HBNBCommand(cmd.Cmd):
                 if command[0] in command_dict:
                     func_call = f"{args[0]} {command[1]}"
                     return command_dict[command[0]](func_call)
+        print(f"*** Unknown syntax: {arg}")
+        return False
 
     def do_create(self, class_name):
         """Creates a new instance of class and saves it"""
@@ -154,32 +156,43 @@ class HBNBCommand(cmd.Cmd):
 
         if len(args) == 0:
             print("** class name missing **")
+            return False
         elif args[0] not in HBNBCommand.all_classes:
             print("** class doesn't exist **")
+            return False
         elif len(args) == 1:
             print("** instance id missing **")
+            return False
         elif f"{args[0]}.{args[1]}" not in all_instances:
             print("** no instance found **")
+            return False
         elif len(args) == 2:
             print("** attribute name missing **")
+            return False
         elif len(args) == 3:
-            print("** value missing **")
-        else:
-            class_name = args[0]
-            obj_id = args[1]
-            key = f"{class_name}.{obj_id}"
-            attribute = args[2]
-            attr_value = args[3]
-            for k, value in all_instances.items():
-                if k == key:
-                    if attr_value.isdecimal():
-                        setattr(value, attribute, int(attr_value))
-                    else:
-                        try:
-                            setattr(value, attribute, float(attr_value))
-                        except ValueError:
-                            setattr(value, attribute, str(attr_value))
-            models.storage.save()
+            try:
+                type(eval(args[2])) != dict
+            except NameError:
+                print("** value missing **")
+                return False
+        if len(args) == 4:
+            obj = all_instances[f"{args[0]}.{args[1]}"]
+            if args[2] in obj.__class__.__dict__.keys():
+                value_type = type(obj.__class__.__dict__[args[2]])
+                obj.__dict__[args[2]] = value_type(args[3])
+            else:
+                obj.__dict__[args[2]] = args[3]
+        elif type(eval(args[2])) == dict:
+            obj = all_instances[f"{args[0]}.{args[1]}"]
+            for key, value in eval(args[2]).items():
+                if (key in obj.__class__.__dict__.keys() and
+                        type(obj.__class__.__dict__[key] in
+                             {str, int, float})):
+                    value_type = type(obj.__class__.__dict__[key])
+                    obj.__dict__[key] = value_type(value)
+                else:
+                    obj.__dict__[key] = value
+        models.storage.save()
 
     def help_update(self):
         """Docstring for update command"""
