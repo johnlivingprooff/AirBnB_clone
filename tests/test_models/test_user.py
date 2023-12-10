@@ -18,9 +18,10 @@ class TestUser(unittest.TestCase):
         """Test 1"""
         self.assertEqual(type(User()), User)
 
-    def test_User_email_is_str(self):
+    def test_User_email_pass_is_str(self):
         """Test 3"""
         self.assertEqual(str, type(User.email))
+        self.assertEqual(str, type(User.password))
 
     def test_User_name_is_str(self):
         """Test 4"""
