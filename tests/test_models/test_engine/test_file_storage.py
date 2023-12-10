@@ -7,6 +7,7 @@ from unittest.mock import patch
 from unittest.mock import mock_open
 from models.base_model import BaseModel
 from models import storage
+from models.engine.file_storage import FileStorage
 
 
 class TestFileStorage(unittest.TestCase):
@@ -34,6 +35,15 @@ class TestFileStorage(unittest.TestCase):
             os.remove('file.json')
         except FileNotFoundError:
             pass
+
+    # CLASS ATTRIBUTES TEST
+    def test_objects_attribute_updated_on_new(self):
+        """Test if __objects attribute
+        is updated when a new object is added
+        """
+        obj = BaseModel()
+        storage.new(obj)
+        self.assertIn(f"BaseModel.{obj.id}", storage._FileStorage__objects)
 
     # METHOD TESTS
     def test_all(self):
