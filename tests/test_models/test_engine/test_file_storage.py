@@ -5,6 +5,8 @@ import json
 import models
 import unittest
 from datetime import datetime
+from unittest.mock import patch
+from unittest.mock import mock_open
 from models.base_model import BaseModel
 from models.engine.file_storage import FileStorage
 from models.user import User
@@ -178,6 +180,38 @@ class TestFileStorage_methods(unittest.TestCase):
         """Tests Reload with args"""
         with self.assertRaises(TypeError):
             models.storage.reload(None)
+
+    # FILE STORAGE TESTS
+    @patch('models.storage.save')  # helpst to mock save method
+    def test_save_method_updates_storage(self, mock_save):
+        """Test whether models.storage.save
+        is called and updates the storage
+        """
+        obj = BaseModel()
+        original_updated_at = obj.updated_at
+
+        # Modify some attributes to trigger the need to save
+        obj.some_attribute = 'new_value'
+
+        obj.save()
+        mock_save.assert_called_once()
+
+        # Verify that updated_at has changed after saving
+        self.assertNotEqual(original_updated_at, obj.updated_at)
+
+    @patch('models.storage.new')  # helps to mock the new method
+    def test_new_method_called_on_instance_creation(self, mock_new):
+        """Test whether models.storage.new
+        is called when creating an instance
+        """
+        obj = BaseModel()
+        mock_new.assert_called_once_with(obj)
+
+    @patch("builtins.open", new_callable=mock_open, read_data='{}')
+    def test_reload_no_file(self, mock_open_file):
+        # Test reloading when the file doesn't exist
+        models.storage.reload()
+        self.assertEqual(models.storage.all(), {})
 
 
 if __name__ == "__main__":
