@@ -119,6 +119,13 @@ class TestFileStorage(unittest.TestCase):
         self.assertEqual(storage._FileStorage__objects, {})
 
     # OTHERS
+    @patch(
+            "builtins.open", new_callable=mock_open,
+            read_data='{"invalid_json":}'
+            )
+    def test_reload_invalid_json(self, mock_open_file):
+        with self.assertRaises(json.JSONDecodeError):
+            storage.reload()
 
 
 if __name__ == '__main__':
