@@ -45,6 +45,14 @@ class TestFileStorage_instantiation(unittest.TestCase):
 class TestFileStorage_methods(unittest.TestCase):
     """Unittests for testing methods of the FileStorage class."""
 
+    # For test_reload method
+    read_data = {
+        "BaseModel.1": {
+            "__class__": "BaseModel",
+            "id": "1",
+            }
+        }
+
     @classmethod
     def setUp(self):
         """Set Up Method"""
@@ -212,6 +220,20 @@ class TestFileStorage_methods(unittest.TestCase):
         # Test reloading when the file doesn't exist
         models.storage.reload()
         self.assertEqual(models.storage.all(), {})
+
+    @patch(
+            "builtins.open", new_callable=mock_open,
+            read_data=json.dumps(read_data)
+            )
+    def test_reload(self, mock_open_file):
+        """Test the reload method, whether objects
+        are correctly deserialized from a JSON file
+        """
+        models.storage.reload()
+        obj = BaseModel()
+        obj.id = "1"
+        key = f"BaseModel.{obj.id}"
+        self.assertEqual(models.storage.all()[key].id, obj.id)
 
 
 if __name__ == "__main__":
