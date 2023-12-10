@@ -72,7 +72,10 @@ class TestFileStorage(unittest.TestCase):
             data = json.load(data_file)
         self.assertEqual(data[f"BaseModel.{obj.id}"], obj.to_dict())
 
-    @patch("builtins.open", new_callable=mock_open, read_data=json.dumps(read_data))
+    @patch(
+            "builtins.open", new_callable=mock_open,
+            read_data=json.dumps(read_data)
+            )
     def test_reload(self, mock_open_file):
         """Test the reload method, whether objects
         are correctly deserialized from a JSON file
@@ -114,6 +117,9 @@ class TestFileStorage(unittest.TestCase):
         # Test reloading when the file doesn't exist
         storage.reload()
         self.assertEqual(storage._FileStorage__objects, {})
+
+    # OTHERS
+
 
 if __name__ == '__main__':
     unittest.main()
