@@ -14,6 +14,19 @@ from models.base_model import BaseModel
 class TestUser(unittest.TestCase):
     """Test cases for User class"""
 
+    def test_User_instantiation_no_args(self):
+        """Test 1"""
+        self.assertEqual(type(User()), User)
+
+    def test_User_email_is_str(self):
+        """Test 3"""
+        self.assertEqual(str, type(User.email))
+
+    def test_User_name_is_str(self):
+        """Test 4"""
+        self.assertEqual(str, type(User.first_name))
+        self.assertEqual(str, type(User.last_name))
+
     # For test_reload method
     read_data = {
         "BaseModel.1": {
