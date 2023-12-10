@@ -39,3 +39,6 @@ class TestAmenity(unittest.TestCase):
         obj = Amenity(name='TestAmenity', id="7q")
         expected_str = f"[Amenity] ({obj.id}) {obj.__dict__}"
         self.assertEqual(str(obj), expected_str)
+
+if __name__ == '__main__':
+    unittest.main()
