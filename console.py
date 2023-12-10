@@ -98,9 +98,7 @@ class HBNBCommand(cmd.Cmd):
 
     def help_show(self):
         """Docstring for show command"""
-        print("Prints the string representation of \
-              an instance based on the class name and id")
-        print("Usage: show <class_name> <class_id>")
+        print("Prints the string repr based on class")
 
     def do_destroy(self, line):
         """Destroys an instance based on the class name and id"""
@@ -219,7 +217,6 @@ class HBNBCommand(cmd.Cmd):
         print("Quit command to exit the program")
 
     help_EOF = help_quit
-    help_exit = help_quit
 
     def emptyline(self):
         """Does nothing if it's an empty line"""
@@ -228,8 +225,6 @@ class HBNBCommand(cmd.Cmd):
     def do_quit(self, line):
         """Quit command to exit the program"""
         return True
-
-    do_exit = do_quit
 
     def do_EOF(self, line):
         """Exit Program"""
