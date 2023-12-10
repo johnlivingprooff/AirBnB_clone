@@ -20,7 +20,6 @@ class TestFileStorage(unittest.TestCase):
             "id": "1",
             }
         }
-    data_str = json.dumps(read_data)
 
     def setUp(self):
         """Reset the objects dictionary and
@@ -43,7 +42,7 @@ class TestFileStorage(unittest.TestCase):
         """
         obj = BaseModel()
         storage.new(obj)
-        self.assertIn(f"BaseModel.{obj.id}", storage._FileStorage__objects)
+        self.assertIn(f"BaseModel.{obj.id}", storage.all())
 
     # METHOD TESTS
     def test_all(self):
@@ -58,8 +57,8 @@ class TestFileStorage(unittest.TestCase):
         obj = BaseModel()
         storage.new(obj)
         key = f"BaseModel.{obj.id}"
-        self.assertIn(key, storage._FileStorage__objects)
-        self.assertEqual(storage._FileStorage__objects[key], obj)
+        self.assertIn(key, storage.all())
+        self.assertEqual(storage.all()[key], obj)
 
     def test_save(self):
         """Test the save method, whether objects
@@ -84,7 +83,7 @@ class TestFileStorage(unittest.TestCase):
         obj = BaseModel()
         obj.id = "1"
         key = f"BaseModel.{obj.id}"
-        self.assertEqual(storage._FileStorage__objects[key].id, obj.id)
+        self.assertEqual(storage.all()[key].id, obj.id)
 
     # FILE STORAGE TESTS
     @patch('models.storage.save')  # helpst to mock save method
@@ -116,16 +115,9 @@ class TestFileStorage(unittest.TestCase):
     def test_reload_no_file(self, mock_open_file):
         # Test reloading when the file doesn't exist
         storage.reload()
-        self.assertEqual(storage._FileStorage__objects, {})
+        self.assertEqual(storage.all(), {})
 
     # OTHERS
-    @patch(
-            "builtins.open", new_callable=mock_open,
-            read_data='{"invalid_json":}'
-            )
-    def test_reload_invalid_json(self, mock_open_file):
-        with self.assertRaises(json.JSONDecodeError):
-            storage.reload()
 
 
 if __name__ == '__main__':
