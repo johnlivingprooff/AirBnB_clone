@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 """Unittest for User class"""
 import unittest
+import json
+from unittest.mock import patch
+from unittest.mock import mock_open
 from unittest.mock import patch
 from datetime import datetime
 from models import storage
@@ -10,6 +13,14 @@ from models.base_model import BaseModel
 
 class TestUser(unittest.TestCase):
     """Test cases for User class"""
+
+    # For test_reload method
+    read_data = {
+        "BaseModel.1": {
+            "__class__": "BaseModel",
+            "id": "1",
+            }
+        }
 
     # BASIC TESTS
     def test_email(self):
@@ -185,6 +196,20 @@ class TestUser(unittest.TestCase):
         """Test if the class handles None last_name"""
         user = User(last_name=None)
         self.assertIsNone(user.last_name)
+
+    @patch(
+            "builtins.open", new_callable=mock_open,
+            read_data=json.dumps(read_data)
+            )
+    def test_reload(self, mock_open_file):
+        """Test the reload method, whether objects
+        are correctly deserialized from a JSON file
+        """
+        storage.reload()
+        obj = BaseModel()
+        obj.id = "1"
+        key = f"BaseModel.{obj.id}"
+        self.assertEqual(storage.all()[key].id, obj.id)
 
 
 if __name__ == '__main__':
