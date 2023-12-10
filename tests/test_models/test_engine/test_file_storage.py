@@ -114,3 +114,6 @@ class TestFileStorage(unittest.TestCase):
         # Test reloading when the file doesn't exist
         storage.reload()
         self.assertEqual(storage._FileStorage__objects, {})
+
+if __name__ == '__main__':
+    unittest.main()
