@@ -9,5 +9,5 @@ footer {
     text-align: center;
     align-items: center;
     bottom: 0;
-    position: fixed;
+    position: relative;
 }
