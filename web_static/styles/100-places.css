@@ -50,9 +50,8 @@ article {
 .information {
     margin-top: 60px;
     height: 80px;
-    border: #dddddd;
-    border-top: solid 1px;
-    border-bottom: solid 1px;
+    border-top: #dddddd solid 1px;
+    border-bottom: #dddddd solid 1px;
     display: flex;
     justify-content: center;
 }
