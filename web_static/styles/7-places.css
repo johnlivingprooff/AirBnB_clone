@@ -1,9 +1,12 @@
 /* places */
 .places {
-    text-align: left;
-    display: block;
+    display: flex;
+    justify-content: center;
+    flex-flow: row wrap;
     h1 {
         font-size: 30px;
+        text-align: left;
+        width: 100%;
     }
 }
 
