@@ -29,6 +29,7 @@ button:hover {
     display: inline-block;
     height: 100%;
     width: 25%;
+    z-index: 10000;
     padding-right: 40px;
     border-right: 1px solid #dddddd;
     h3 {
@@ -49,6 +50,7 @@ h4 {
     vertical-align: middle;
     display: inline-block;
     height: 100%;
+    z-index: 10000;
     width: 25%;
     padding-right: 40px;
     h3 {
